@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\Game;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -34,17 +35,34 @@ class PlayBowlingCommand extends Command
             '  | |',
             '   |',
         ]);
-        // $arg1 = $input->getArgument('arg1');
 
-        // if ($arg1) {
-        //     $io->note(sprintf('You passed an argument: %s', $arg1));
-        // }
+        $game = new Game();
 
-        // if ($input->getOption('option1')) {
-        //     // ...
-        // }
+        for ($round = 1; $round <= 10; $round++) {
+            $firstRollPins = \rand(0, 10);
+            $game->roll($firstRollPins);
 
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
+            if ($firstRollPins < 10) {
+                $secondRollPins = \rand(0, 10 - $firstRollPins);
+                $game->roll($secondRollPins);
+
+                if ($round === 10 && $firstRollPins + $secondRollPins === 10) {
+                    $game->roll(\rand(0, 10));
+                }
+            } else {
+                if ($round === 10) {
+                    $firstRollPins = \rand(0, 10);
+                    $game->roll($firstRollPins);
+
+                    $secondRollPins = \rand(0, 10 - $firstRollPins);
+                    $game->roll($secondRollPins);
+                }
+            }
+
+            if ($round === 10) {
+                $io->success(\sprintf('Votre score est de : %s', $game->score()));
+            }
+        }
 
         return Command::SUCCESS;
     }
