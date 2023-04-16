@@ -29,7 +29,6 @@ class Game
                 $index = $index + 2;
             }
         }
-        \dump($this->rolls);
         return $score;
     }
 
